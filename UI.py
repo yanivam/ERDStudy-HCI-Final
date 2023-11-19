@@ -134,12 +134,14 @@ class Trial():
                 # if the week Im in is valid AND the ERD came to be, return it.
                 if self.week+1 == self.manufacturer.get_sequence()[self.trial][self.week] and self.week+1 <= 6:
                     self.data_file.write("\n - Week #" + str(self.week+1) + " expected ERD: Week #" + str(self.manufacturer.get_sequence()[self.trial][self.week]) + ", user action: " + str('STAYED'))
-                    self.data_file.write("\n Total cost for Trial #" + str(self.trial + 1) + " = " + str(self.cost_per_week[self.week-1]))
+                    self.data_file.write("\n ERD was accomplished!")
+                    self.data_file.write("\n Total cost for Trial #" + str(self.trial + 1) + " = " + str(0))
                     self.data_file.close()
                     return 0, self.week 
                 if self.manufacturer.get_sequence()[self.trial][self.week] > 6 and self.week+1 == 6:
                     self.data_file.write("\n - Week #" + str(self.week+1) + " expected ERD: Week #" + str(self.manufacturer.get_sequence()[self.trial][self.week]) + ", user action: " + str('STAYED'))
-                    self.data_file.write("\n Total cost for Trial #" + str(self.trial + 1) + " = " + str(self.cost_per_week[self.week-1]))
+                    self.data_file.write("\n ERD was not accomplished!")
+                    self.data_file.write("\n Total cost for Trial #" + str(self.trial + 1) + " = " + str(self.cost_per_week[self.week]))
                     self.data_file.close()
                     print("\nYour inventory ran out, your penalty is 100000")
                     print ("\n-------------------------END TRIAL #" + str(self.trial + 1) + "-----------------------------------")
@@ -155,6 +157,7 @@ class Trial():
                     if action_time == "S":
                         self.switched = True
                         self.data_file.write("\n - Week #" + str(self.week+1) + " expected ERD: Week #" + str(self.manufacturer.get_sequence()[self.trial][self.week]) + ", user action: " + str('SWITCHED'))
+                        self.data_file.write("\n Switched manufacturers!")
                         self.data_file.write("\n Total cost for Trial #" + str(self.trial + 1) + " = " + str(self.cost_per_week[self.week-1]))
                         self.data_file.close()
                         print ("---------------------------END TRIAL " + str(self.trial + 1) + "----------------------------------")
@@ -175,7 +178,36 @@ class Trial():
             return self.cost_per_week[self.week-1], self.week-1
         else:
             show_erd_view()
-        
+
+def userSurvey(user, file_path):
+    survey = open(file_path + "General Survey for " + str(user) + ".txt", 'w')
+    survey.write("Survey Question Answers")
+    print ("------------------------------------------------------------------------")
+    satisfaction = input("Please rate your satisfaction in a scale from 1-5 working with XYZ: \nExtremely dissatisfied  (1) " +
+                    "\nSomewhat dissatisfied (2) \nNeither satisfied nor dissatisfied (3) \nSomewhat satisfied (4) \nExtremely satisfied  (5) \nInput a number from 1-5: ")
+    print ("------------------------------------------------------------------------")
+    survey.write("\nSatisfaction answer: " + satisfaction)
+    print ("------------------------------------------------------------------------")
+    work_again = input("Please rate your satisfaction in a scale from 1-5 working with XYZ: \nExtremely unlikely (1)" +
+                    "\nSomewhat unlikely (2) \nNeither likely nor unlikely (3)  \nSomewhat likely (4) \nExtremely likely (5) \nInput a number from 1-5: ")
+    print ("------------------------------------------------------------------------")
+    survey.write("\nWork again answer: " + work_again)
+    print ("------------------------------------------------------------------------")
+    age = input("How old are you (in years)?: ")
+    print ("------------------------------------------------------------------------")
+    survey.write("\nAge: " + age)
+    gender = input("What is your gender? (Input DNS for 'Prefer not to say'): ")
+    print ("------------------------------------------------------------------------")
+    survey.write("\nGender: " + gender)
+    print ("------------------------------------------------------------------------")
+    edu = input("Please indicate your highest level of education (on a scale from 1-8): " +
+                "\nLess than high school  (1) \nHigh school graduate  (2)  \nSome college  (3) \n2 year degree  (4) \n4 year degree  (5) \n"
+                "\nProfessional degree  (6)  \nMaster degree  (7) \nDoctorate  (8) \nInput a number from 1-8: ")
+    print ("------------------------------------------------------------------------")
+    survey.write("\nEducation level: " + edu)
+    survey.close()
+
+    return
 
 class Study():
     def __init__(self, num_trials):
@@ -216,9 +248,10 @@ class Study():
         user_data_file.write("\nFinal tally cost: " + str(cost_overall))
         user_data_file.write("\nRemaining budget: " + str(hc_budget))
         user_data_file.close()
-        print("Thank you", user, "for participating! \n ")
+        print("Thank you", user, "for participating! Please fill the following questions: \n ")
+        userSurvey(user, "experiment_" + user + str('/'))
 
 # set to 7
-trial_total = 7
+trial_total = 1
 study = Study(trial_total)
 study.run_experiment()
