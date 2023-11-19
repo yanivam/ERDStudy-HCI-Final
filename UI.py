@@ -137,6 +137,13 @@ class Trial():
                     self.data_file.write("\n Total cost for Trial #" + str(self.trial + 1) + " = " + str(self.cost_per_week[self.week-1]))
                     self.data_file.close()
                     return 0, self.week 
+                if self.manufacturer.get_sequence()[self.trial][self.week] > 6 and self.week+1 == 6:
+                    self.data_file.write("\n - Week #" + str(self.week+1) + " expected ERD: Week #" + str(self.manufacturer.get_sequence()[self.trial][self.week]) + ", user action: " + str('STAYED'))
+                    self.data_file.write("\n Total cost for Trial #" + str(self.trial + 1) + " = " + str(self.cost_per_week[self.week-1]))
+                    self.data_file.close()
+                    print("\nYour inventory ran out, your penalty is 100000")
+                    print ("\n-------------------------END TRIAL #" + str(self.trial + 1) + "-----------------------------------")
+                    return 100000, self.week 
                 else:
                     # Ask the user whether they want to switch or stay
                     print ("------------------------------------------------------------------------")
