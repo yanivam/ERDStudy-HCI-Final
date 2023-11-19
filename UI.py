@@ -179,6 +179,42 @@ class Trial():
         else:
             show_erd_view()
 
+def withinTrialSurvey(file_path, trial):
+    
+    survey = open(file_path + "Trial #" + str(trial) + " survey.txt", 'w')
+    survey.write("Trial #" + str(trial) + " Survey Question Answers: ")
+    print ("------------------------------------------------------------------------")
+    trust = input("Trust: How much do you trust on a scale from 1-5 XYZ to deliver the product on time?: \nNone at all  (1) " +
+                    "\nA little (2)  \nA moderate amount (3) \nA lot (4) \nA great deal  (5) \nInput a number from 1-5: ")
+    print ("------------------------------------------------------------------------")
+    survey.write("\nQ1 Answer: " + trust)
+    print ("------------------------------------------------------------------------")
+    competence = input("Competent: How competent XYZ is in delivering drugs as promised? : \nNone at all  (1) " +
+                    "\nA little (2)  \nA moderate amount (3) \nA lot (4) \nA great deal  (5) \nInput a number from 1-5: ")
+    print ("------------------------------------------------------------------------")
+    survey.write("\nQ2 Answer: " + competence)
+    print ("------------------------------------------------------------------------")
+    bene = input("Benevolent: How much do you think XYZ act in the best interests of you?: \nNone at all  (1) " +
+                    "\nA little (2)  \nA moderate amount (3) \nA lot (4) \nA great deal  (5) \nInput a number from 1-5: ")
+    print ("------------------------------------------------------------------------")
+    survey.write("\nQ3 Answer: " + bene)
+    print ("------------------------------------------------------------------------")
+    predict = input("Predictable: How predictive are XYZ's ERD messages?: \nExtremely dissatisfied  (1) " +
+                    "\nSomewhat dissatisfied (2) \nNeither satisfied nor dissatisfied (3) \nSomewhat satisfied (4) \nExtremely satisfied  (5) \nInput a number from 1-5: ")
+    print ("------------------------------------------------------------------------")
+    survey.write("\nQ4 Answer: " + predict)
+    print ("------------------------------------------------------------------------")
+    resp = input("Responsibility How much do you think XYZ is in control of when to deliver the products during shortages?: \nExtremely dissatisfied  (1) " +
+                    "\nSomewhat dissatisfied (2) \nNeither satisfied nor dissatisfied (3) \nSomewhat satisfied (4) \nExtremely satisfied  (5) \nInput a number from 1-5: ")
+    print ("------------------------------------------------------------------------")
+    survey.write("\nQ5 Answer: " + resp)
+    print ("End for Trial #" + str(trial) + " Survey")
+    print ("------------------------------------------------------------------------")
+    survey.close()
+
+    return
+ 
+
 def userSurvey(user, file_path):
     survey = open(file_path + "General Survey for " + str(user) + ".txt", 'w')
     survey.write("Survey Question Answers")
@@ -186,25 +222,25 @@ def userSurvey(user, file_path):
     satisfaction = input("Please rate your satisfaction in a scale from 1-5 working with XYZ: \nExtremely dissatisfied  (1) " +
                     "\nSomewhat dissatisfied (2) \nNeither satisfied nor dissatisfied (3) \nSomewhat satisfied (4) \nExtremely satisfied  (5) \nInput a number from 1-5: ")
     print ("------------------------------------------------------------------------")
-    survey.write("\nSatisfaction answer: " + satisfaction)
+    survey.write("\nQ1 Satisfaction answer: " + satisfaction)
     print ("------------------------------------------------------------------------")
     work_again = input("Please rate your satisfaction in a scale from 1-5 working with XYZ: \nExtremely unlikely (1)" +
                     "\nSomewhat unlikely (2) \nNeither likely nor unlikely (3)  \nSomewhat likely (4) \nExtremely likely (5) \nInput a number from 1-5: ")
     print ("------------------------------------------------------------------------")
-    survey.write("\nWork again answer: " + work_again)
+    survey.write("\nQ2 Work again answer: " + work_again)
     print ("------------------------------------------------------------------------")
     age = input("How old are you (in years)?: ")
     print ("------------------------------------------------------------------------")
-    survey.write("\nAge: " + age)
+    survey.write("\nQ3 Age: " + age)
     gender = input("What is your gender? (Input DNS for 'Prefer not to say'): ")
     print ("------------------------------------------------------------------------")
-    survey.write("\nGender: " + gender)
+    survey.write("\nQ4 Gender: " + gender)
     print ("------------------------------------------------------------------------")
     edu = input("Please indicate your highest level of education (on a scale from 1-8): " +
-                "\nLess than high school  (1) \nHigh school graduate  (2)  \nSome college  (3) \n2 year degree  (4) \n4 year degree  (5) \n"
+                "\nLess than high school  (1) \nHigh school graduate  (2)  \nSome college  (3) \n2 year degree  (4) \n4 year degree  (5)" +
                 "\nProfessional degree  (6)  \nMaster degree  (7) \nDoctorate  (8) \nInput a number from 1-8: ")
     print ("------------------------------------------------------------------------")
-    survey.write("\nEducation level: " + edu)
+    survey.write("\nQ5 Education level: " + edu)
     survey.close()
 
     return
@@ -244,12 +280,20 @@ class Study():
             hc_budget -= cost_incurred
             user_data_file.write("\nTrial #" + str(i + 1) + " cost: " + str(cost_incurred))
             print("The remaining budget after Trial #" + str(i+1) + " is " + str(hc_budget) + "\n \n")
+            print(" ")
+            print ("------------------------------------------------------------------------")
+            print("Trial #" + str(i+1) + " survey time! \n")
+            withinTrialSurvey("experiment_" + user + str('/'), i+1)
+            print ("------------------------------------------------------------------------")
             
         user_data_file.write("\nFinal tally cost: " + str(cost_overall))
         user_data_file.write("\nRemaining budget: " + str(hc_budget))
         user_data_file.close()
-        print("Thank you", user, "for participating! Please fill the following questions: \n ")
+        print(" ")
+        print ("------------------------------------------------------------------------")
+        print("Post study survey time!: Please fill the following questions: \n")
         userSurvey(user, "experiment_" + user + str('/'))
+        print("Thank you", user, "for participating!")
 
 # set to 7
 trial_total = 1
