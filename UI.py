@@ -42,51 +42,51 @@ class Trial():
         self.trial = trial
         self.weeks_until_inventory_runs_out = weeks_until_inventory_runs_out
         self.cost_per_week = cost_per_week
-        self.root = tk.Tk()
-        self.root.title("Experiment UI")
         self.manufacturer = Manufacturer(manufacturer)
         self.current_ERD = self.manufacturer.get_sequence()[trial][0]
-
-        self.main_frame = tk.Frame(self.root)
-        self.main_frame.pack(fill=tk.BOTH, expand=True)
-
-        self.left_frame = tk.Frame(self.main_frame, width=150, bg="lightgray")
-        self.left_frame.pack(side=tk.LEFT, fill=tk.Y)
-
-        self.content_frame = tk.Frame(self.main_frame)
-        self.content_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
-
-        self.top_frame = tk.Frame(self.content_frame, height=300, bg="lightblue")
-        self.top_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
-
-        self.bottom_frame = tk.Frame(self.content_frame, height=100, bg="lightgreen")
-        self.bottom_frame.pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True)
-
-        self.switch_button = tk.Button(self.bottom_frame, text="Switch", command=self.switch_action)
-        self.switch_button.pack(side=tk.LEFT, padx=10, pady=5)
-
-        self.wait_button = tk.Button(self.bottom_frame, text="Wait", command=self.wait_action)
-        self.wait_button.pack(side=tk.RIGHT, padx=10, pady=5)
-
-        self.erd_button = tk.Button(self.left_frame, text="ERD View") # command=print("hello 1")
-        self.erd_button.grid(row=0, column=0, padx=20, pady=50)
-
-        self.historical_button = tk.Button(self.left_frame, text="Historical Graph") #command=print("hello 1")
-        self.historical_button.grid(row=1, column=0, padx=20, pady=50)
-
-        self.money_button = tk.Button(self.left_frame, text="Money Spent") #command=print("hello 3)
-        self.money_button.grid(row=2, column=0, padx=20, pady=50)
-
-        self.erd_label = tk.Label(self.top_frame, text=f"Estimated Resupply Date: {self.current_ERD}")
-        self.erd_label.pack()
-
-        self.week_label = tk.Label(self.top_frame, text=f"Week: {self.week + 1}")
-        self.week_label.pack()
-        
         self.switched = False
-
         self.data_file = open(self.dir_name + "Trial #" + str(self.trial + 1) + " data.txt", 'w')
         self.data_file.write("Trial #" + str(self.trial + 1) + ":")
+        
+        if self.visual_exp:
+            self.root = tk.Tk()
+            self.root.title("Experiment UI")
+
+            self.main_frame = tk.Frame(self.root)
+            self.main_frame.pack(fill=tk.BOTH, expand=True)
+
+            self.left_frame = tk.Frame(self.main_frame, width=150, bg="lightgray")
+            self.left_frame.pack(side=tk.LEFT, fill=tk.Y)
+
+            self.content_frame = tk.Frame(self.main_frame)
+            self.content_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
+
+            self.top_frame = tk.Frame(self.content_frame, height=300, bg="lightblue")
+            self.top_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+
+            self.bottom_frame = tk.Frame(self.content_frame, height=100, bg="lightgreen")
+            self.bottom_frame.pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True)
+
+            self.switch_button = tk.Button(self.bottom_frame, text="Switch", command=self.switch_action)
+            self.switch_button.pack(side=tk.LEFT, padx=10, pady=5)
+
+            self.wait_button = tk.Button(self.bottom_frame, text="Wait", command=self.wait_action)
+            self.wait_button.pack(side=tk.RIGHT, padx=10, pady=5)
+
+            self.erd_button = tk.Button(self.left_frame, text="ERD View") # command=print("hello 1")
+            self.erd_button.grid(row=0, column=0, padx=20, pady=50)
+
+            self.historical_button = tk.Button(self.left_frame, text="Historical Graph") #command=print("hello 1")
+            self.historical_button.grid(row=1, column=0, padx=20, pady=50)
+
+            self.money_button = tk.Button(self.left_frame, text="Money Spent") #command=print("hello 3)
+            self.money_button.grid(row=2, column=0, padx=20, pady=50)
+
+            self.erd_label = tk.Label(self.top_frame, text=f"Estimated Resupply Date: {self.current_ERD}")
+            self.erd_label.pack()
+
+            self.week_label = tk.Label(self.top_frame, text=f"Week: {self.week + 1}")
+            self.week_label.pack()
 
     def update_ERD_display(self):
         self.erd_label.config(text=f"Estimated Resupply Date: {self.current_ERD}")
@@ -177,7 +177,43 @@ class Trial():
             print ("\n-------------------------END TRIAL #" + str(self.trial + 1) + "-----------------------------------")
             return self.cost_per_week[self.week-1], self.week-1
         else:
-            show_erd_view()
+            self.root.mainloop()
+            # if the week Im in is valid AND the ERD came to be, return it.
+
+            if self.week == self.manufacturer.get_sequence()[self.trial][self.week - 1] and self.week <= 6:
+                self.data_file.write("\n - Week #" + str(self.week+1) + " expected ERD: Week #" + str(self.manufacturer.get_sequence()[self.trial][self.week - 1]) + ", user action: " + str('STAYED'))
+                self.data_file.write("\n ERD was accomplished!")
+                self.data_file.write("\n Total cost for Trial #" + str(self.trial + 1) + " = " + str(0))
+                self.data_file.close()
+                return 0, self.week 
+            if self.manufacturer.get_sequence()[self.trial][self.week - 1] > 6 and self.week == 6:
+                self.data_file.write("\n - Week #" + str(self.week+1) + " expected ERD: Week #" + str(self.manufacturer.get_sequence()[self.trial][self.week - 1]) + ", user action: " + str('STAYED'))
+                self.data_file.write("\n ERD was not accomplished!")
+                self.data_file.write("\n Total cost for Trial #" + str(self.trial + 1) + " = " + str(self.cost_per_week[self.week]))
+                self.data_file.close()
+                print("\nYour inventory ran out, your penalty is 100000")
+                print ("\n-------------------------END TRIAL #" + str(self.trial + 1) + "-----------------------------------")
+                return 100000, self.week 
+            else:
+                # Ask the user whether they want to switch or stay
+                print ("------------------------------------------------------------------------")
+                print("- Week " + str(self.week ) + ": Your MN's ERD is for week " + str(self.manufacturer.get_sequence()[self.trial][self.week - 1]))
+                action_time = input("Do you want to wait (W) or switch (S)? The cost for switching is " + str(self.cost_per_week[self.week - 1])  + " \nMark either (W/S): ")
+                print(" ")
+
+                # If you switch, end the trial
+                if action_time == "S":
+                    self.switched = True
+                    self.data_file.write("\n - Week #" + str(self.week) + " expected ERD: Week #" + str(self.manufacturer.get_sequence()[self.trial][self.week - 1]) + ", user action: " + str('SWITCHED'))
+                    self.data_file.write("\n Switched manufacturers!")
+                    self.data_file.write("\n Total cost for Trial #" + str(self.trial + 1) + " = " + str(self.cost_per_week[self.week-1]))
+                    self.data_file.close()
+                    print ("---------------------------END TRIAL " + str(self.trial + 1) + "----------------------------------")
+                    return self.cost_per_week[self.week - 1], self.week
+                # update the week info
+                else:
+                    self.data_file.write("\n - Week #" + str(self.week) + " expected ERD: Week #" + str(self.manufacturer.get_sequence()[self.trial][self.week - 1]) + ", user action: " + str('STAYED'))
+                    self.week += 1
 
 def withinTrialSurvey(file_path, trial):
     
@@ -271,7 +307,7 @@ class Study():
 
         cost_overall = 0
         user_data_file = open("experiment_" + user + str('/') + "Trial Summary" + " data.txt", 'w')
-        visual_UI = False
+        visual_UI = True
         for i in range(self.num_trials):
             trial = Trial(i, 6, [37500, 40000,45000,55000,70000,100000], "ACC", visual_UI, "experiment_" + user + str('/'))
             cost_incurred, week = trial.run_trial()
