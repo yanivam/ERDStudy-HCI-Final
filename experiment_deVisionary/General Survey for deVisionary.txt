@@ -1,0 +1,6 @@
+Survey Question Answers
+Q1 Satisfaction answer: 2
+Q2 Work again answer: 2
+Q3 Age: 53
+Q4 Gender: Male
+Q5 Education level: 5

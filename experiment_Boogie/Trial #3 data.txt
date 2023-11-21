@@ -1,0 +1,4 @@
+Trial #3:
+ - Week #1 expected ERD: Week #4, user action: SWITCHED
+ Switched manufacturers!
+ Total cost for Trial #3 = 100000
