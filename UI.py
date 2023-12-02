@@ -1,5 +1,19 @@
 import tkinter as tk
+from tkinter import ttk
 import os
+
+class CostTable:
+     
+    def __init__(self,lst,root,rows,columns):
+        # code for creating table
+        for i in range(rows):
+            for j in range(columns):
+                 
+                self.e = tk.Entry(root, width=20, fg='blue',
+                               font=('Arial',16,'bold'))
+                 
+                # self.e.grid(row=i, column=j)
+                self.e.insert(tk.END, lst[j])
 
 class Manufacturer():
     def __init__(self, type):
@@ -87,6 +101,31 @@ class Trial():
 
             self.week_label = tk.Label(self.top_frame, text=f"Week: {self.week + 1}")
             self.week_label.pack()
+
+            self.weeks_until_inventory_runs_out_label = tk.Label(self.top_frame, text=f"Week that inventroy runs out: {self.weeks_until_inventory_runs_out}")
+            self.weeks_until_inventory_runs_out_label.pack()
+
+            self.max_cost_label = tk.Label(self.top_frame, text=f"Cost of running out of inventory without switching: {self.cost_per_week[-1]}")
+            self.max_cost_label.pack()
+
+            self.switching_cost_label = tk.Label(self.top_frame, text=f"Cost of of switching per week:")
+            self.switching_cost_label.pack()
+
+            self.table_frame = tk.Frame(self.top_frame)
+
+            self.tree = ttk.Treeview(self.table_frame, columns=(1, 2, 3, 4, 5, 6), show="headings", height=1)
+            self.tree.grid(row=2, column=len(self.cost_per_week), columnspan=2, padx=10, pady=10)
+
+            # Define columns
+            for week in range(len(self.cost_per_week) + 1):
+                self.tree.heading(week, text=f"Week {week}")
+
+            self.tree.insert(parent="", index="end", values=self.cost_per_week)
+
+            for col in range(1, len(cost_per_week) + 1):
+                self.tree.column(col, anchor="center")
+
+            self.table_frame.pack()
 
     def update_ERD_display(self):
         self.erd_label.config(text=f"Estimated Resupply Date: {self.current_ERD}")
@@ -178,7 +217,6 @@ class Trial():
             return self.cost_per_week[self.week-1], self.week-1
         else:
             self.root.mainloop()
-            # if the week Im in is valid AND the ERD came to be, return it.
 
             if self.week == self.manufacturer.get_sequence()[self.trial][self.week - 1] and self.week <= 6:
                 self.data_file.write("\n - Week #" + str(self.week+1) + " expected ERD: Week #" + str(self.manufacturer.get_sequence()[self.trial][self.week - 1]) + ", user action: " + str('STAYED'))
@@ -195,25 +233,13 @@ class Trial():
                 print ("\n-------------------------END TRIAL #" + str(self.trial + 1) + "-----------------------------------")
                 return 100000, self.week 
             else:
-                # Ask the user whether they want to switch or stay
-                print ("------------------------------------------------------------------------")
-                print("- Week " + str(self.week ) + ": Your MN's ERD is for week " + str(self.manufacturer.get_sequence()[self.trial][self.week - 1]))
-                action_time = input("Do you want to wait (W) or switch (S)? The cost for switching is " + str(self.cost_per_week[self.week - 1])  + " \nMark either (W/S): ")
-                print(" ")
-
-                # If you switch, end the trial
-                if action_time == "S":
-                    self.switched = True
-                    self.data_file.write("\n - Week #" + str(self.week) + " expected ERD: Week #" + str(self.manufacturer.get_sequence()[self.trial][self.week - 1]) + ", user action: " + str('SWITCHED'))
-                    self.data_file.write("\n Switched manufacturers!")
-                    self.data_file.write("\n Total cost for Trial #" + str(self.trial + 1) + " = " + str(self.cost_per_week[self.week-1]))
-                    self.data_file.close()
-                    print ("---------------------------END TRIAL " + str(self.trial + 1) + "----------------------------------")
-                    return self.cost_per_week[self.week - 1], self.week
-                # update the week info
-                else:
-                    self.data_file.write("\n - Week #" + str(self.week) + " expected ERD: Week #" + str(self.manufacturer.get_sequence()[self.trial][self.week - 1]) + ", user action: " + str('STAYED'))
-                    self.week += 1
+                self.switched = True
+                self.data_file.write("\n - Week #" + str(self.week) + " expected ERD: Week #" + str(self.manufacturer.get_sequence()[self.trial][self.week - 1]) + ", user action: " + str('SWITCHED'))
+                self.data_file.write("\n Switched manufacturers!")
+                self.data_file.write("\n Total cost for Trial #" + str(self.trial + 1) + " = " + str(self.cost_per_week[self.week-1]))
+                self.data_file.close()
+                print ("---------------------------END TRIAL " + str(self.trial + 1) + "----------------------------------")
+                return self.cost_per_week[self.week - 1], self.week
 
 def withinTrialSurvey(file_path, trial):
     
