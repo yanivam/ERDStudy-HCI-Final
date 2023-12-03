@@ -413,7 +413,7 @@ class Study():
             print(" ")
             print ("------------------------------------------------------------------------")
             print("Trial #" + str(i+1) + " survey time! \n")
-            # withinTrialSurvey("experiment_" + user + str('/'), i+1)
+            withinTrialSurvey("experiment_" + user + str('/'), i+1)
             print ("------------------------------------------------------------------------")
 
             
