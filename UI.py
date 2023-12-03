@@ -166,15 +166,15 @@ class Trial():
             panel.pack()
             
     def updateERD_Weekly(self):
+        print(self.week)
         week = self.week
         if week == 0:
             return
         else:
             weeks = [x+1 for x in range(week)]
             ERD = [self.manufacturer.get_sequence()[self.trial][week-1] for week in weeks]
-            path = self.dir_name + "visualizations/Trial_" + str(trial) + '_week_' + str(week) + '.jpg'
-            
-            plt.title("Cost per Trial Week (Last Trial Completed: " + str(trial) +")")
+            path = self.dir_name + "visualizations/Trial_" + str(self.trial) + '_week_' + str(week) + '.jpg'
+            plt.title("Cost per Trial Week (Last Trial Completed: " + str(self.trial) +")")
             plt.xlabel("Week #")
             plt.ylabel("Expected ERD")
             plt.bar(weeks, ERD)
@@ -194,6 +194,7 @@ class Trial():
             self.current_ERD = self.manufacturer.get_sequence()[self.trial][self.week]
             self.update_ERD_display()
             self.update_week_display()
+            self.updateERD_Weekly()
 
     def run_trial(self):
         def create_button(text, command, row, column):
@@ -400,7 +401,7 @@ class Study():
             print(" ")
             print ("------------------------------------------------------------------------")
             print("Trial #" + str(i+1) + " survey time! \n")
-            withinTrialSurvey("experiment_" + user + str('/'), i+1)
+            # withinTrialSurvey("experiment_" + user + str('/'), i+1)
             print ("------------------------------------------------------------------------")
 
             
