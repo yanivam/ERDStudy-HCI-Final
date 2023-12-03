@@ -123,9 +123,11 @@ class Trial():
             self.switching_cost_label = tk.Label(self.top_frame, text=f"Cost of of switching per week:")
             self.switching_cost_label.pack()
 
-            self.updateERD_Hist()
-
             self.table_frame = tk.Frame(self.top_frame)
+            
+            self.updateERD_Weekly()
+            
+            self.updateERD_Hist()
 
             self.tree = ttk.Treeview(self.table_frame, columns=(1, 2, 3, 4, 5, 6), show="headings", height=1)
             self.tree.grid(row=2, column=len(self.cost_per_week), columnspan=2, padx=10, pady=10)
@@ -157,6 +159,27 @@ class Trial():
             return
         else:
             path = self.dir_name + "visualizations/Trial_" + str(trial) + ".jpg"
+            img = Image.open(path)
+            img = ImageTk.PhotoImage(img)
+            panel = tk.Label(self.top_frame, image=img)
+            panel.image = img
+            panel.pack()
+            
+    def updateERD_Weekly(self):
+        week = self.week
+        if week == 0:
+            return
+        else:
+            weeks = [x+1 for x in range(week)]
+            ERD = [self.manufacturer.get_sequence()[self.trial][week-1] for week in weeks]
+            path = self.dir_name + "visualizations/Trial_" + str(trial) + '_week_' + str(week) + '.jpg'
+            
+            plt.title("Cost per Trial Week (Last Trial Completed: " + str(trial) +")")
+            plt.xlabel("Week #")
+            plt.ylabel("Expected ERD")
+            plt.bar(weeks, ERD)
+            plt.savefig(path)
+            
             img = Image.open(path)
             img = ImageTk.PhotoImage(img)
             panel = tk.Label(self.top_frame, image=img)
@@ -265,7 +288,7 @@ class Trial():
                 self.data_file.write("\n Total cost for Trial #" + str(self.trial + 1) + " = " + str(self.cost_per_week[self.week-1]))
                 self.data_file.close()
                 print ("---------------------------END TRIAL " + str(self.trial + 1) + "----------------------------------")
-                return self.cost_per_week[self.week - 1], self.week
+                return self.cost_per_week[self.week], self.week
 
 def withinTrialSurvey(file_path, trial):
     
