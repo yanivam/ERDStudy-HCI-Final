@@ -1,7 +1,18 @@
 import tkinter as tk
 from tkinter import ttk
 import os
+import matplotlib.pyplot as plt
+import PIL
 
+def TrialCosts(trial, cost, weeks, path):
+    path = path
+    plt.title("Cost per Trial Week (Last Trial Completed: " + str(trial) +")")
+    plt.xlabel("Trial #")
+    plt.ylabel("Cost Incurred")
+    plt.bar(weeks, cost)
+    plt.savefig(path + 'Trial_' + str(trial) + '.jpg')
+    return
+        
 class CostTable:
      
     def __init__(self,lst,root,rows,columns):
@@ -111,6 +122,8 @@ class Trial():
             self.switching_cost_label = tk.Label(self.top_frame, text=f"Cost of of switching per week:")
             self.switching_cost_label.pack()
 
+            self.updateERD_Hist()
+
             self.table_frame = tk.Frame(self.top_frame)
 
             self.tree = ttk.Treeview(self.table_frame, columns=(1, 2, 3, 4, 5, 6), show="headings", height=1)
@@ -136,6 +149,18 @@ class Trial():
     def switch_action(self):
         self.switched = True
         self.root.destroy()
+
+    def updateERD_Hist(self):
+        trial = self.trial
+        if trial == 0:
+            return
+        else:
+            path = self.dir_name + "visualizations/Trial_" + str(trial) + ".jpg"
+            img = PIL.Image.open(path)
+            img = PIL.ImageTk.PhotoImage(img)
+            panel = tk.Label(self.top_frame, image=img)
+            panel.image = img
+            panel.pack()
 
     def wait_action(self):
         self.week += 1
@@ -313,11 +338,15 @@ class Study():
 
     def run_experiment(self):
 
+        weeks = [1,2,3,4,5,6]
+        costs = [0,0,0,0,0,0]
+
         user = input("\nHello! Add a username for to recognize you for the study!: ")
 
         while (True):
             if not os.path.exists("experiment_" + user + str('/')):
                 os.mkdir("experiment_" + user + str('/'))
+                os.mkdir("experiment_" + user + str('/visualizations/'))
                 print("\nThank you!")
                 break
             else:
@@ -333,13 +362,15 @@ class Study():
 
         cost_overall = 0
         user_data_file = open("experiment_" + user + str('/') + "Trial Summary" + " data.txt", 'w')
-        visual_UI = True
+        visual_UI = False
         for i in range(self.num_trials):
             trial = Trial(i, 6, [37500, 40000,45000,55000,70000,100000], "ACC", visual_UI, "experiment_" + user + str('/'))
             cost_incurred, week = trial.run_trial()
             cost_overall += cost_incurred
             print("\nTrial " + str(i+1) + " ended on week " +  str(week+1) + " and the cost incurred was $" + str(cost_incurred))
             hc_budget -= cost_incurred
+            costs[i] = cost_incurred
+            TrialCosts(i+1, costs, weeks, "experiment_" + user + str('/visualizations/'))
             user_data_file.write("\nTrial #" + str(i + 1) + " cost: " + str(cost_incurred))
             print("The remaining budget after Trial #" + str(i+1) + " is " + str(hc_budget) + "\n \n")
             print(" ")
@@ -347,6 +378,7 @@ class Study():
             print("Trial #" + str(i+1) + " survey time! \n")
             withinTrialSurvey("experiment_" + user + str('/'), i+1)
             print ("------------------------------------------------------------------------")
+
             
         user_data_file.write("\nFinal tally cost: " + str(cost_overall))
         user_data_file.write("\nRemaining budget: " + str(hc_budget))
@@ -358,6 +390,6 @@ class Study():
         print("Thank you", user, "for participating!")
 
 # set to 7
-trial_total = 1
+trial_total = 2
 study = Study(trial_total)
 study.run_experiment()
