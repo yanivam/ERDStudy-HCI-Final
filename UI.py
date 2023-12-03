@@ -6,13 +6,13 @@ import PIL
 from PIL import Image,ImageTk
 
 def TrialCosts(trial, cost, weeks, path):
-    path = path
-    plt.title("Cost per Trial Week (Last Trial Completed: " + str(trial) +")")
-    plt.xlabel("Trial #")
-    plt.ylabel("Cost Incurred")
-    plt.bar(weeks, cost)
-    plt.savefig(path + 'Trial_' + str(trial) + '.jpg')
-    return
+  path = path
+  plt.title("Cost per Trial Week (Last Trial Completed: " + str(trial) + ")")
+  plt.xlabel("Trial #")
+  plt.ylabel("Cost Incurred")
+  plt.bar(weeks, cost)
+  plt.savefig(path + 'Trial_' + str(trial) + '.jpg')
+  return
         
 class CostTable:
      
@@ -162,48 +162,49 @@ class Trial():
         if trial == 0:
             return
         else:
+            self.trial_vis.image = ""
             path = self.dir_name + "visualizations/Trial_" + str(trial) + ".jpg"
             img = Image.open(path)
+            img = img.resize((400, 350))
             img = ImageTk.PhotoImage(img)
             self.trial_vis.config(image=img)
-            self.trial_vis.image=img
+            self.trial_vis.image = img
             return
-            # panel = tk.Label(self.top_frame, image=img)
-            # panel.image = img
-            # panel.pack()
-            
+
     def updateERD_Weekly(self):
         week = self.week
         if week == 0:
             return
         else:
-            weeks = [x+1 for x in range(week)]
-            ERD = [self.manufacturer.get_sequence()[self.trial][week-1] for week in weeks]
-            path = self.dir_name + "visualizations/Trial_" + str(self.trial) + '_week_' + str(week) + '.jpg'
-            plt.title("Cost per Trial Week (Trial: " + str(self.trial+1) +")")
+        weeks = [x + 1 for x in range(week)]
+            ERD = [
+                self.manufacturer.get_sequence()[self.trial][week - 1]
+                for week in weeks
+            ]
+            path = self.dir_name + "visualizations/Trial_" + str(
+                self.trial) + '_week_' + str(week) + '.jpg'
+            plt.title("Cost per Trial Week (Trial: " + str(self.trial + 1) + ")")
             plt.xlabel("Week #")
             plt.ylabel("Expected ERD")
             plt.plot(weeks, ERD)
             plt.xticks(range(1, 7))
             plt.yticks(range(1, 10))
             plt.savefig(path)
-        
+
             img = Image.open(path)
+            img = img.resize((400, 350))
             img = ImageTk.PhotoImage(img)
             self.erd_weekly_vis.config(image=img)
-            self.erd_weekly_vis.image=img
+            self.erd_weekly_vis.image = img
             return
-            # panel = tk.Label(self.erd_weekly_vis, image=img)
-            # panel.image = img
-            # panel.pack()
 
     def wait_action(self):
         self.updateERD_Weekly()
         self.week += 1
-        if self.week >= len(self.manufacturer.get_sequence()[self.trial]):
+        if self.week-1 >= len(self.manufacturer.get_sequence()[self.trial]):
             self.root.destroy()
         else:
-            self.current_ERD = self.manufacturer.get_sequence()[self.trial][self.week]
+            self.current_ERD = self.manufacturer.get_sequence()[self.trial][self.week-1]
             self.update_ERD_display()
             self.update_week_display()
             self.updateERD_Weekly()
@@ -270,7 +271,7 @@ class Trial():
                 
                 # elif self.week+1 == self.manufacturer.get_sequence()[self.trial][self.week] and self.week+1 <= 6:
                 #     return 0, self.week 
-            self.data_file.write("\n - Week #" + str(self.week+1) + " expected ERD: Week #" + str(self.manufacturer.get_sequence()[self.trial][self.week-1]) + ", user action: " + str('STAYED'))
+            self.data_file.write("\n - Week #" + str(self.week+1) + " expected ERD: Week #" + str(self.manufacturer.get_sequence()[self.trial][self.week]) + ", user action: " + str('STAYED'))
             self.data_file.write("\n Total cost for Trial #" + str(self.trial + 1) + " = " + str(self.cost_per_week[self.week-1]))
             self.data_file.close()
             print ("------------------------------------------------------------------------")
