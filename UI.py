@@ -124,10 +124,6 @@ class Trial():
             self.switching_cost_label.pack()
 
             self.table_frame = tk.Frame(self.top_frame)
-            
-            self.updateERD_Weekly()
-            
-            self.updateERD_Hist()
 
             self.tree = ttk.Treeview(self.table_frame, columns=(1, 2, 3, 4, 5, 6), show="headings", height=1)
             self.tree.grid(row=2, column=len(self.cost_per_week), columnspan=2, padx=10, pady=10)
@@ -142,6 +138,14 @@ class Trial():
                 self.tree.column(col, anchor="center")
 
             self.table_frame.pack()
+            
+            self.erd_weekly_vis = tk.Label(self.top_frame, image="")
+            self.erd_weekly_vis.pack()
+            
+            self.trial_vis = tk.Label(self.top_frame, image="")
+            self.trial_vis.pack()
+            
+            self.updateERD_Hist()
 
     def update_ERD_display(self):
         self.erd_label.config(text=f"Estimated Resupply Date: {self.current_ERD}")
@@ -161,12 +165,14 @@ class Trial():
             path = self.dir_name + "visualizations/Trial_" + str(trial) + ".jpg"
             img = Image.open(path)
             img = ImageTk.PhotoImage(img)
-            panel = tk.Label(self.top_frame, image=img)
-            panel.image = img
-            panel.pack()
+            self.trial_vis.config(image=img)
+            self.trial_vis.image=img
+            return
+            # panel = tk.Label(self.top_frame, image=img)
+            # panel.image = img
+            # panel.pack()
             
     def updateERD_Weekly(self):
-        print(self.week)
         week = self.week
         if week == 0:
             return
@@ -174,19 +180,25 @@ class Trial():
             weeks = [x+1 for x in range(week)]
             ERD = [self.manufacturer.get_sequence()[self.trial][week-1] for week in weeks]
             path = self.dir_name + "visualizations/Trial_" + str(self.trial) + '_week_' + str(week) + '.jpg'
-            plt.title("Cost per Trial Week (Last Trial Completed: " + str(self.trial) +")")
+            plt.title("Cost per Trial Week (Trial: " + str(self.trial+1) +")")
             plt.xlabel("Week #")
             plt.ylabel("Expected ERD")
-            plt.bar(weeks, ERD)
+            plt.plot(weeks, ERD)
+            plt.xticks(range(1, 7))
+            plt.yticks(range(1, 10))
             plt.savefig(path)
-            
+        
             img = Image.open(path)
             img = ImageTk.PhotoImage(img)
-            panel = tk.Label(self.top_frame, image=img)
-            panel.image = img
-            panel.pack()
+            self.erd_weekly_vis.config(image=img)
+            self.erd_weekly_vis.image=img
+            return
+            # panel = tk.Label(self.erd_weekly_vis, image=img)
+            # panel.image = img
+            # panel.pack()
 
     def wait_action(self):
+        self.updateERD_Weekly()
         self.week += 1
         if self.week >= len(self.manufacturer.get_sequence()[self.trial]):
             self.root.destroy()
