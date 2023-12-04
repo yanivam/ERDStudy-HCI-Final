@@ -13,19 +13,6 @@ def TrialCosts(trial, cost, weeks, path):
   plt.ylabel("Cost Incurred")
   plt.savefig(path + 'Trial_' + str(trial) + '.jpg')
   return
-        
-class CostTable:
-     
-    def __init__(self,lst,root,rows,columns):
-        # code for creating table
-        for i in range(rows):
-            for j in range(columns):
-                 
-                self.e = tk.Entry(root, width=20, fg='blue',
-                               font=('Arial',16,'bold'))
-                 
-                # self.e.grid(row=i, column=j)
-                self.e.insert(tk.END, lst[j])
 
 class Manufacturer():
     def __init__(self, type):
@@ -188,7 +175,6 @@ class Trial():
     def updateERD_Weekly(self):
         week = self.week
         if week == 0:
-            self.trial_vis.text
             return
         else:
             plt.figure()
