@@ -6,11 +6,11 @@ import PIL
 from PIL import Image,ImageTk
 
 def TrialCosts(trial, cost, weeks, path):
-  path = path
+  plt.figure()
+  plt.bar(weeks, cost, color='red')
   plt.title("Cost per Trial Week (Last Trial Completed: " + str(trial) + ")")
   plt.xlabel("Trial #")
   plt.ylabel("Cost Incurred")
-  plt.bar(weeks, cost)
   plt.savefig(path + 'Trial_' + str(trial) + '.jpg')
   return
         
@@ -99,28 +99,28 @@ class Trial():
             self.wait_button = tk.Button(self.bottom_frame, text="Wait", command=self.wait_action)
             self.wait_button.pack(side=tk.RIGHT, padx=10, pady=5)
 
-            self.erd_button = tk.Button(self.left_frame, text="ERD View") # command=print("hello 1")
+            self.erd_button = tk.Button(self.left_frame, text="ERD View", command= self.updateERD_Weekly)
             self.erd_button.grid(row=0, column=0, padx=20, pady=50)
 
-            self.historical_button = tk.Button(self.left_frame, text="Historical Graph") #command=print("hello 1")
+            self.historical_button = tk.Button(self.left_frame, text="Historical Graph", command=self.updateERD_Hist)
             self.historical_button.grid(row=1, column=0, padx=20, pady=50)
 
             self.money_button = tk.Button(self.left_frame, text="Money Spent") #command=print("hello 3)
             self.money_button.grid(row=2, column=0, padx=20, pady=50)
 
-            self.erd_label = tk.Label(self.top_frame, text=f"Estimated Resupply Date: {self.current_ERD}")
+            self.erd_label = tk.Label(self.top_frame, font=('Arial', 25), text=f"Estimated Resupply Date: {self.current_ERD}")
             self.erd_label.pack()
 
-            self.week_label = tk.Label(self.top_frame, text=f"Week: {self.week + 1}")
+            self.week_label = tk.Label(self.top_frame, font=('Arial', 25), text=f"Week: {self.week + 1}")
             self.week_label.pack()
 
-            self.weeks_until_inventory_runs_out_label = tk.Label(self.top_frame, text=f"Week that inventroy runs out: {self.weeks_until_inventory_runs_out}")
+            self.weeks_until_inventory_runs_out_label = tk.Label(self.top_frame, font=('Arial', 20), text=f"Week that inventroy runs out: {self.weeks_until_inventory_runs_out}")
             self.weeks_until_inventory_runs_out_label.pack()
 
-            self.max_cost_label = tk.Label(self.top_frame, text=f"Cost of running out of inventory without switching: {self.cost_per_week[-1]}")
+            self.max_cost_label = tk.Label(self.top_frame, font=('Arial', 20), text=f"Cost of running out of inventory without switching: {self.cost_per_week[-1]}")
             self.max_cost_label.pack()
 
-            self.switching_cost_label = tk.Label(self.top_frame, text=f"Cost of of switching per week:")
+            self.switching_cost_label = tk.Label(self.top_frame, font=('Arial', 20), text=f"Cost of of switching per week:")
             self.switching_cost_label.pack()
 
             self.table_frame = tk.Frame(self.top_frame)
@@ -139,13 +139,27 @@ class Trial():
 
             self.table_frame.pack()
             
-            self.erd_weekly_vis = tk.Label(self.top_frame, image="")
-            self.erd_weekly_vis.pack()
+            # self.erd_weekly_vis = tk.Label(self.top_frame, image="")
+            # self.erd_weekly_vis.pack()
             
             self.trial_vis = tk.Label(self.top_frame, image="")
             self.trial_vis.pack()
             
-            self.updateERD_Hist()
+            # self.updateERD_Hist()
+
+    def historical_work(self):
+        trial = self.trial
+        if trial == 0:
+            return
+        else:
+            self.trial_vis.image = ""
+            path = self.dir_name + "visualizations/Trial_" + str(trial) + ".jpg"
+            img = Image.open(path)
+            img = img.resize((400, 350))
+            img = ImageTk.PhotoImage(img)
+            self.trial_vis.config(image=img)
+            self.trial_vis.image = img
+            return
 
     def update_ERD_display(self):
         self.erd_label.config(text=f"Estimated Resupply Date: {self.current_ERD}")
@@ -162,7 +176,7 @@ class Trial():
         if trial == 0:
             return
         else:
-            self.trial_vis.image = ""
+            self.trial_vis.image = " "
             path = self.dir_name + "visualizations/Trial_" + str(trial) + ".jpg"
             img = Image.open(path)
             img = img.resize((400, 350))
@@ -174,8 +188,11 @@ class Trial():
     def updateERD_Weekly(self):
         week = self.week
         if week == 0:
+            self.trial_vis.text
             return
         else:
+            plt.figure()
+            self.trial_vis.image = " "
             weeks = [x + 1 for x in range(week)]
             ERD = [
                 self.manufacturer.get_sequence()[self.trial][week - 1]
@@ -183,10 +200,10 @@ class Trial():
             ]
             path = self.dir_name + "visualizations/Trial_" + str(
                 self.trial) + '_week_' + str(week) + '.jpg'
-            plt.title("Cost per Trial Week (Trial: " + str(self.trial + 1) + ")")
+            plt.title("ERD Estimate (Trial: " + str(self.trial + 1) + ")")
             plt.xlabel("Week #")
             plt.ylabel("Expected ERD")
-            plt.plot(weeks, ERD)
+            plt.plot(weeks, ERD, color='red')
             plt.xticks(range(1, 7))
             plt.yticks(range(1, 10))
             plt.savefig(path)
@@ -194,8 +211,8 @@ class Trial():
             img = Image.open(path)
             img = img.resize((400, 350))
             img = ImageTk.PhotoImage(img)
-            self.erd_weekly_vis.config(image=img)
-            self.erd_weekly_vis.image = img
+            self.trial_vis.config(image=img)
+            self.trial_vis.image = img
             return
 
     def wait_action(self):
@@ -302,7 +319,7 @@ class Trial():
                 self.data_file.write("\n Total cost for Trial #" + str(self.trial + 1) + " = " + str(self.cost_per_week[self.week-1]))
                 self.data_file.close()
                 print ("---------------------------END TRIAL " + str(self.trial + 1) + "----------------------------------")
-                return self.cost_per_week[self.week], self.week
+                return self.cost_per_week[self.week+1], self.week
 
 def withinTrialSurvey(file_path, trial):
     
@@ -428,6 +445,6 @@ class Study():
         print("Thank you", user, "for participating!")
 
 # set to 7
-trial_total = 2
+trial_total = 3
 study = Study(trial_total)
 study.run_experiment()
