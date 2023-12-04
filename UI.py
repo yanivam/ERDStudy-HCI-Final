@@ -169,7 +169,7 @@ class Trial():
 
     def switch_action(self):
         self.switched = True
-        self.root.destroy()
+        self.root.quit()
 
     def updateERD_Hist(self):
         trial = self.trial
@@ -219,7 +219,7 @@ class Trial():
         self.updateERD_Weekly()
         self.week += 1
         if self.week-1 >= len(self.manufacturer.get_sequence()[self.trial]):
-            self.root.destroy()
+            self.root.quit()
         else:
             self.current_ERD = self.manufacturer.get_sequence()[self.trial][self.week-1]
             self.update_ERD_display()
@@ -297,29 +297,34 @@ class Trial():
             return self.cost_per_week[self.week-1], self.week-1
         else:
             self.root.mainloop()
-            self.week -= 1
-            if self.week == self.manufacturer.get_sequence()[self.trial][self.week - 1] and self.week <= 6:
-                self.data_file.write("\n - Week #" + str(self.week+1) + " expected ERD: Week #" + str(self.manufacturer.get_sequence()[self.trial][self.week - 1]) + ", user action: " + str('STAYED'))
-                self.data_file.write("\n ERD was accomplished!")
-                self.data_file.write("\n Total cost for Trial #" + str(self.trial + 1) + " = " + str(0))
-                self.data_file.close()
-                return 0, self.week 
-            if self.manufacturer.get_sequence()[self.trial][self.week - 1] > 6 and self.week == 6:
-                self.data_file.write("\n - Week #" + str(self.week+1) + " expected ERD: Week #" + str(self.manufacturer.get_sequence()[self.trial][self.week - 1]) + ", user action: " + str('STAYED'))
-                self.data_file.write("\n ERD was not accomplished!")
-                self.data_file.write("\n Total cost for Trial #" + str(self.trial + 1) + " = " + str(self.cost_per_week[self.week]))
-                self.data_file.close()
-                print("\nYour inventory ran out, your penalty is 100000")
-                print ("\n-------------------------END TRIAL #" + str(self.trial + 1) + "-----------------------------------")
-                return 100000, self.week 
-            else:
+            try:
+                self.root.destroy()
+            except:
                 self.switched = True
+            if self.switched == True:
                 self.data_file.write("\n - Week #" + str(self.week) + " expected ERD: Week #" + str(self.manufacturer.get_sequence()[self.trial][self.week - 1]) + ", user action: " + str('SWITCHED'))
                 self.data_file.write("\n Switched manufacturers!")
                 self.data_file.write("\n Total cost for Trial #" + str(self.trial + 1) + " = " + str(self.cost_per_week[self.week-1]))
                 self.data_file.close()
                 print ("---------------------------END TRIAL " + str(self.trial + 1) + "----------------------------------")
-                return self.cost_per_week[self.week+1], self.week
+                return self.cost_per_week[self.week], self.week
+            else:
+                self.week -= 1
+                if self.week == self.manufacturer.get_sequence()[self.trial][self.week - 1] and self.week <= 6:
+                    self.data_file.write("\n - Week #" + str(self.week) + " expected ERD: Week #" + str(self.manufacturer.get_sequence()[self.trial][self.week - 1]) + ", user action: " + str('STAYED'))
+                    self.data_file.write("\n ERD was accomplished!")
+                    self.data_file.write("\n Total cost for Trial #" + str(self.trial + 1) + " = " + str(0))
+                    self.data_file.close()
+                    return 0, self.week
+                else:
+                    self.data_file.write("\n - Week #" + str(self.week) + " expected ERD: Week #" + str(self.manufacturer.get_sequence()[self.trial][self.week - 1]) + ", user action: " + str('STAYED'))
+                    self.data_file.write("\n ERD was not accomplished!")
+                    self.data_file.write("\n Total cost for Trial #" + str(self.trial + 1) + " = " + str(self.cost_per_week[self.week - 1]))
+                    self.data_file.close()
+                    print("\nYour inventory ran out, your penalty is 100000")
+                    print ("\n-------------------------END TRIAL #" + str(self.trial + 1) + "-----------------------------------")
+                    return 100000, self.week 
+                
 
 def withinTrialSurvey(file_path, trial):
     
@@ -393,8 +398,8 @@ class Study():
 
     def run_experiment(self):
 
-        weeks = [1,2,3,4,5,6]
-        costs = [0,0,0,0,0,0]
+        weeks = [1,2,3,4,5,6,7]
+        costs = [0,0,0,0,0,0,0]
 
         user = input("\nHello! Add a username for to recognize you for the study!: ")
 
@@ -445,6 +450,6 @@ class Study():
         print("Thank you", user, "for participating!")
 
 # set to 7
-trial_total = 3
+trial_total = 7
 study = Study(trial_total)
 study.run_experiment()
