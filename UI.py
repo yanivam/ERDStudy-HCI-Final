@@ -176,7 +176,7 @@ class Trial():
         if week == 0:
             return
         else:
-        weeks = [x + 1 for x in range(week)]
+            weeks = [x + 1 for x in range(week)]
             ERD = [
                 self.manufacturer.get_sequence()[self.trial][week - 1]
                 for week in weeks
@@ -280,7 +280,7 @@ class Trial():
             return self.cost_per_week[self.week-1], self.week-1
         else:
             self.root.mainloop()
-
+            self.week -= 1
             if self.week == self.manufacturer.get_sequence()[self.trial][self.week - 1] and self.week <= 6:
                 self.data_file.write("\n - Week #" + str(self.week+1) + " expected ERD: Week #" + str(self.manufacturer.get_sequence()[self.trial][self.week - 1]) + ", user action: " + str('STAYED'))
                 self.data_file.write("\n ERD was accomplished!")
