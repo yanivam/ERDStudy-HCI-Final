@@ -47,9 +47,10 @@ class Manufacturer():
         return self.sequence
 
 class Trial():
-    def __init__(self, trial, weeks_until_inventory_runs_out, cost_per_week, manufacturer, visual_UI, dir_name):
+    def __init__(self, trial, weeks_until_inventory_runs_out, cost_per_week, manufacturer, visual_UI, dir_name, cost_ov):
 
         self.week = 0
+        self.cost = cost_ov
         self.dir_name = dir_name
         self.visual_exp = visual_UI
         self.trial = trial
@@ -89,7 +90,7 @@ class Trial():
             self.erd_button = tk.Button(self.left_frame, text="ERD View", command= self.updateERD_Weekly)
             self.erd_button.grid(row=0, column=0, padx=20, pady=50)
 
-            self.historical_button = tk.Button(self.left_frame, text="Historical Graph", command=self.updateERD_Hist)
+            self.historical_button = tk.Button(self.left_frame, text="Historical Graph")#, command=self.updateERD_Hist)
             self.historical_button.grid(row=1, column=0, padx=20, pady=50)
 
             self.money_button = tk.Button(self.left_frame, text="Money Spent") #command=print("hello 3)
@@ -129,24 +130,28 @@ class Trial():
             # self.erd_weekly_vis = tk.Label(self.top_frame, image="")
             # self.erd_weekly_vis.pack()
             
-            self.trial_vis = tk.Label(self.top_frame, image="")
-            self.trial_vis.pack()
+            self.curr_trial_vis = tk.Label(self.top_frame, image="")
+            self.curr_trial_vis.pack(side='left')
             
-            # self.updateERD_Hist()
+            self.curr_trial_vis_del = tk.Label(self.top_frame, text="")
+            self.curr_trial_vis_del.pack(side='right')
+            
+            self.updateERD_Weekly()
+            
+            self.trial_Title = tk.Label(self.bottom_frame, font=('Arial', 20), text="Historical Data for Incurred Costs")
+            self.trial_Title.pack()
+            self.trial_vis = tk.Label(self.bottom_frame)
+            # self.trial_vis.pack(side='left')
+            self.trial_cost = tk.Label(self.bottom_frame)
+            # self.trial_cost.pack(side='right')
+            
+            self.updateERD_Hist()
 
-    def historical_work(self):
-        trial = self.trial
-        if trial == 0:
-            return
-        else:
-            self.trial_vis.image = ""
-            path = self.dir_name + "visualizations/Trial_" + str(trial) + ".jpg"
-            img = Image.open(path)
-            img = img.resize((400, 350))
-            img = ImageTk.PhotoImage(img)
-            self.trial_vis.config(image=img)
-            self.trial_vis.image = img
-            return
+    def manufacturerDelay(self):
+        total = 0
+        for sequences in self.manufacturer.sequence:
+            total += abs(sequences[0] - sequences[-1])
+        return total / len(self.manufacturer.sequence)
 
     def update_ERD_display(self):
         self.erd_label.config(text=f"Estimated Resupply Date: {self.current_ERD}")
@@ -161,6 +166,8 @@ class Trial():
     def updateERD_Hist(self):
         trial = self.trial
         if trial == 0:
+            self.trial_vis.configure(text='There is no historical data available yet...')
+            self.trial_vis.pack()
             return
         else:
             self.trial_vis.image = " "
@@ -170,6 +177,9 @@ class Trial():
             img = ImageTk.PhotoImage(img)
             self.trial_vis.config(image=img)
             self.trial_vis.image = img
+            self.trial_vis.pack(side='left')
+            self.trial_cost.config(text= "Total cost so far: \n $"+str(self.cost))
+            self.trial_cost.pack(side='right')
             return
 
     def updateERD_Weekly(self):
@@ -197,12 +207,13 @@ class Trial():
             img = Image.open(path)
             img = img.resize((400, 350))
             img = ImageTk.PhotoImage(img)
-            self.trial_vis.config(image=img)
-            self.trial_vis.image = img
+            self.curr_trial_vis.config(image=img)
+            self.curr_trial_vis.image = img
+            self.curr_trial_vis_del.configure(text="Average ERD Delay: \n"+str(round(self.manufacturerDelay(), 3)) + " week(s)")
             return
 
     def wait_action(self):
-        self.updateERD_Weekly()
+        # self.updateERD_Weekly()
         self.week += 1
         if self.week-1 >= len(self.manufacturer.get_sequence()[self.trial]):
             self.root.quit()
@@ -410,7 +421,7 @@ class Study():
         user_data_file = open("experiment_" + user + str('/') + "Trial Summary" + " data.txt", 'w')
         visual_UI = True
         for i in range(self.num_trials):
-            trial = Trial(i, 6, [37500, 40000,45000,55000,70000,100000], "ACC", visual_UI, "experiment_" + user + str('/'))
+            trial = Trial(i, 6, [37500, 40000,45000,55000,70000,100000], "ACC", visual_UI, "experiment_" + user + str('/'), cost_overall)
             cost_incurred, week = trial.run_trial()
             cost_overall += cost_incurred
             print("\nTrial " + str(i+1) + " ended on week " +  str(week+1) + " and the cost incurred was $" + str(cost_incurred))
@@ -436,6 +447,6 @@ class Study():
         print("Thank you", user, "for participating!")
 
 # set to 7
-trial_total = 7
+trial_total = 2
 study = Study(trial_total)
 study.run_experiment()
