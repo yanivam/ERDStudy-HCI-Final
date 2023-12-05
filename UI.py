@@ -368,7 +368,7 @@ def userSurvey(user, file_path):
     print ("------------------------------------------------------------------------")
     survey.write("\nQ1 Satisfaction answer: " + satisfaction)
     print ("------------------------------------------------------------------------")
-    work_again = input("Please rate your satisfaction in a scale from 1-5 working with XYZ: \nExtremely unlikely (1)" +
+    work_again = input("Please rate in a scale from 1-5 how likely would you work again with XYZ: \nExtremely unlikely (1)" +
                     "\nSomewhat unlikely (2) \nNeither likely nor unlikely (3)  \nSomewhat likely (4) \nExtremely likely (5) \nInput a number from 1-5: ")
     print ("------------------------------------------------------------------------")
     survey.write("\nQ2 Work again answer: " + work_again)
@@ -419,7 +419,7 @@ class Study():
 
         cost_overall = 0
         user_data_file = open("experiment_" + user + str('/') + "Trial Summary" + " data.txt", 'w')
-        visual_UI = True
+        visual_UI = False
         for i in range(self.num_trials):
             trial = Trial(i, 6, [37500, 40000,45000,55000,70000,100000], "ACC", visual_UI, "experiment_" + user + str('/'), cost_overall)
             cost_incurred, week = trial.run_trial()
@@ -447,6 +447,6 @@ class Study():
         print("Thank you", user, "for participating!")
 
 # set to 7
-trial_total = 2
+trial_total = 7
 study = Study(trial_total)
 study.run_experiment()
