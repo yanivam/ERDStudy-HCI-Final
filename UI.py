@@ -86,22 +86,34 @@ class Trial():
 
             self.wait_button = tk.Button(self.bottom_frame, text="Wait", command=self.wait_action)
             self.wait_button.pack(side=tk.RIGHT, padx=10, pady=5)
+            
+            self.inv_button = tk.Button(self.left_frame, text="Inventory Info", command=self.getTable)
+            self.inv_button.grid(row=0, column=0, padx=20, pady=50)
 
             self.erd_button = tk.Button(self.left_frame, text="ERD View", command= self.updateERD_Weekly)
-            self.erd_button.grid(row=0, column=0, padx=20, pady=50)
+            self.erd_button.grid(row=1, column=0, padx=20, pady=50)
 
-            self.historical_button = tk.Button(self.left_frame, text="Historical Graph")#, command=self.updateERD_Hist)
-            self.historical_button.grid(row=1, column=0, padx=20, pady=50)
+            self.historical_button = tk.Button(self.left_frame, text="Historical Graph", command=self.updateERD_Hist)
+            self.historical_button.grid(row=2, column=0, padx=20, pady=50)
+            
+            self.titleFormat('ERD_Week')
+            
+            # self.curr_trial_vis = tk.Label(self.top_frame, image="")
+            # self.curr_trial_vis.pack(side='left')
+            
+            # self.curr_trial_vis_del = tk.Label(self.top_frame, text="")
+            # self.curr_trial_vis_del.pack(side='right')
+            
+            self.updateERD_Weekly()
+            
+    def titleFormat(self, section):  
+        self.erd_label = tk.Label(self.top_frame, font=('Arial', 25), text=f"Estimated Resupply Date: {self.current_ERD}")
+        self.erd_label.pack()
 
-            self.money_button = tk.Button(self.left_frame, text="Money Spent") #command=print("hello 3)
-            self.money_button.grid(row=2, column=0, padx=20, pady=50)
-
-            self.erd_label = tk.Label(self.top_frame, font=('Arial', 25), text=f"Estimated Resupply Date: {self.current_ERD}")
-            self.erd_label.pack()
-
-            self.week_label = tk.Label(self.top_frame, font=('Arial', 25), text=f"Week: {self.week + 1}")
-            self.week_label.pack()
-
+        self.week_label = tk.Label(self.top_frame, font=('Arial', 25), text=f"Week: {self.week + 1}")
+        self.week_label.pack()
+        
+        if section == 'Inv':
             self.weeks_until_inventory_runs_out_label = tk.Label(self.top_frame, font=('Arial', 20), text=f"Week that inventroy runs out: {self.weeks_until_inventory_runs_out}")
             self.weeks_until_inventory_runs_out_label.pack()
 
@@ -110,42 +122,36 @@ class Trial():
 
             self.switching_cost_label = tk.Label(self.top_frame, font=('Arial', 20), text=f"Cost of of switching per week:")
             self.switching_cost_label.pack()
-
-            self.table_frame = tk.Frame(self.top_frame)
-
-            self.tree = ttk.Treeview(self.table_frame, columns=(1, 2, 3, 4, 5, 6), show="headings", height=1)
-            self.tree.grid(row=2, column=len(self.cost_per_week), columnspan=2, padx=10, pady=10)
-
-            # Define columns
-            for week in range(len(self.cost_per_week) + 1):
-                self.tree.heading(week, text=f"Week {week}")
-
-            self.tree.insert(parent="", index="end", values=self.cost_per_week)
-
-            for col in range(1, len(cost_per_week) + 1):
-                self.tree.column(col, anchor="center")
-
-            self.table_frame.pack()
             
-            # self.erd_weekly_vis = tk.Label(self.top_frame, image="")
-            # self.erd_weekly_vis.pack()
+        elif section == 'ERD_Week':
+            self.erd_week_labesl = tk.Label(self.top_frame, font=('Arial', 20), text=f"Here is a look at the expected ERDs:")
+            self.erd_week_labesl.pack()
+        else:
+            self.erd_hist_cost = tk.Label(self.top_frame, font=('Arial', 20), text=f"Here is a look your historical expenses:")
+            self.erd_hist_cost.pack()
             
-            self.curr_trial_vis = tk.Label(self.top_frame, image="")
-            self.curr_trial_vis.pack(side='left')
+
+    def getTable(self):
+        for child in self.top_frame.winfo_children():
+            child.destroy()
             
-            self.curr_trial_vis_del = tk.Label(self.top_frame, text="")
-            self.curr_trial_vis_del.pack(side='right')
-            
-            self.updateERD_Weekly()
-            
-            self.trial_Title = tk.Label(self.bottom_frame, font=('Arial', 20), text="Historical Data for Incurred Costs")
-            self.trial_Title.pack()
-            self.trial_vis = tk.Label(self.bottom_frame)
-            # self.trial_vis.pack(side='left')
-            self.trial_cost = tk.Label(self.bottom_frame)
-            # self.trial_cost.pack(side='right')
-            
-            self.updateERD_Hist()
+        self.titleFormat('Inv')
+        
+        self.table_frame = tk.Frame(self.top_frame)
+
+        self.tree = ttk.Treeview(self.table_frame, columns=(1, 2, 3, 4, 5, 6), show="headings", height=1)
+        self.tree.grid(row=2, column=len(self.cost_per_week), columnspan=2, padx=10, pady=10)
+
+        # Define columns
+        for week in range(len(self.cost_per_week) + 1):
+            self.tree.heading(week, text=f"Week {week}")
+
+        self.tree.insert(parent="", index="end", values=self.cost_per_week)
+
+        for col in range(1, len(self.cost_per_week) + 1):
+            self.tree.column(col, anchor="center")
+
+        self.table_frame.pack()
 
     def manufacturerDelay(self):
         total = 0
@@ -164,36 +170,49 @@ class Trial():
         self.root.quit()
 
     def updateERD_Hist(self):
+        for child in self.top_frame.winfo_children():
+            child.destroy()
+            
+        self.titleFormat('ERD_Hist')
         trial = self.trial
         if trial == 0:
-            self.trial_vis.configure(text='There is no historical data available yet...')
+            self.trial_vis = tk.Label(self.top_frame)
+            self.trial_vis.configure(font=('Arial', 15), text='There is no historical data available yet...')
             self.trial_vis.pack()
             return
         else:
-            self.trial_vis.image = " "
+            self.trial_Title = tk.Label(self.top_frame, font=('Arial', 20), text="Historical Data for Incurred Costs")
+            self.trial_Title.pack()
+            self.trial_vis = tk.Label(self.top_frame)
+            # self.trial_vis.pack(side='left')
+            self.trial_cost = tk.Label(self.top_frame)
             path = self.dir_name + "visualizations/Trial_" + str(trial) + ".jpg"
             img = Image.open(path)
             img = img.resize((400, 350))
             img = ImageTk.PhotoImage(img)
             self.trial_vis.config(image=img)
-            self.trial_vis.image = img
+            # self.trial_vis.image = img
             self.trial_vis.pack(side='left')
             self.trial_cost.config(text= "Total cost so far: \n $"+str(self.cost))
             self.trial_cost.pack(side='right')
             return
 
     def updateERD_Weekly(self):
+        for child in self.top_frame.winfo_children():
+            child.destroy()
+            
+        self.titleFormat('ERD_Week')
         week = self.week
         if week == 0:
+            self.trial_vis = tk.Label(self.top_frame)
+            self.trial_vis.configure(font=('Arial', 15), text='Its week 1! Choose to either Wait or Switch!')
+            self.trial_vis.pack()
             return
         else:
             plt.figure()
-            self.trial_vis.image = " "
+            # self.trial_vis.image = " "
             weeks = [x + 1 for x in range(week)]
-            ERD = [
-                self.manufacturer.get_sequence()[self.trial][week - 1]
-                for week in weeks
-            ]
+            ERD = [self.manufacturer.get_sequence()[self.trial][week - 1] for week in weeks]
             path = self.dir_name + "visualizations/Trial_" + str(
                 self.trial) + '_week_' + str(week) + '.jpg'
             plt.title("ERD Estimate (Trial: " + str(self.trial + 1) + ")")
@@ -203,19 +222,21 @@ class Trial():
             plt.xticks(range(1, 7))
             plt.yticks(range(1, 10))
             plt.savefig(path)
-
+            
             img = Image.open(path)
             img = img.resize((400, 350))
             img = ImageTk.PhotoImage(img)
-            self.curr_trial_vis.config(image=img)
-            self.curr_trial_vis.image = img
-            self.curr_trial_vis_del.configure(text="Average ERD Delay: \n"+str(round(self.manufacturerDelay(), 3)) + " week(s)")
+            self.trial_vis = tk.Label(self.top_frame, image=img, text="Average ERD Delay: \n"+str(round(self.manufacturerDelay(), 3)) + " week(s)")
+            self.trial_vis.pack()
+            # self.trial_vis.config(image=img)
+            # self.trial_vis.image = img
+            # self.trial_vis.configure(text="Average ERD Delay: \n"+str(round(self.manufacturerDelay(), 3)) + " week(s)")
             return
 
     def wait_action(self):
-        # self.updateERD_Weekly()
+        self.updateERD_Weekly()
         self.week += 1
-        if self.week-1 >= len(self.manufacturer.get_sequence()[self.trial]):
+        if self.week+1 == len(self.manufacturer.get_sequence()[self.trial]):
             self.root.quit()
         else:
             self.current_ERD = self.manufacturer.get_sequence()[self.trial][self.week-1]
@@ -419,7 +440,7 @@ class Study():
 
         cost_overall = 0
         user_data_file = open("experiment_" + user + str('/') + "Trial Summary" + " data.txt", 'w')
-        visual_UI = False
+        visual_UI = True
         for i in range(self.num_trials):
             trial = Trial(i, 6, [37500, 40000,45000,55000,70000,100000], "ACC", visual_UI, "experiment_" + user + str('/'), cost_overall)
             cost_incurred, week = trial.run_trial()
@@ -447,6 +468,6 @@ class Study():
         print("Thank you", user, "for participating!")
 
 # set to 7
-trial_total = 7
+trial_total = 2
 study = Study(trial_total)
 study.run_experiment()
