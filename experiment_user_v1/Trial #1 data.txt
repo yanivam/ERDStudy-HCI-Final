@@ -1,0 +1,9 @@
+Trial #1:
+ - Week #1 expected ERD: Week #5, user action: STAYED
+ - Week #2 expected ERD: Week #5, user action: STAYED
+ - Week #3 expected ERD: Week #6, user action: STAYED
+ - Week #4 expected ERD: Week #6, user action: STAYED
+ - Week #5 expected ERD: Week #6, user action: STAYED
+ - Week #6 expected ERD: Week #6, user action: STAYED
+ ERD was accomplished!
+ Total cost for Trial #1 = 0
