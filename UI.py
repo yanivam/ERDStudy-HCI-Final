@@ -238,7 +238,7 @@ class Trial():
     def wait_action(self):
         # self.updateERD_Weekly()
         self.week += 1
-        if self.week+1 == len(self.manufacturer.get_sequence()[self.trial]):
+        if self.week == len(self.manufacturer.get_sequence()[self.trial]):
             self.root.quit()
         else:
             self.current_ERD = self.manufacturer.get_sequence()[self.trial][self.week-1]
@@ -247,22 +247,6 @@ class Trial():
             self.updateERD_Weekly()
 
     def run_trial(self):
-        def create_button(text, command, row, column):
-            button = tk.Button(self.root, text=text, command=command)
-            button.grid(row=row, column=column, padx=200, pady=100)
-        
-        def show_erd_view():
-            # Replace this function with code to display ERD view
-            print("ERD view displayed")
-
-        def show_historical_graph():
-            # Replace this function with code to display historical graph
-            print("Historical graph displayed")
-
-        def show_money_spent():
-            # Replace this function with code to display money spent per trial
-            print("Money spent view displayed")
-        
         # The non visual UI setup
         if not self.visual_exp:
 
@@ -329,13 +313,12 @@ class Trial():
                 print ("---------------------------END TRIAL " + str(self.trial + 1) + "----------------------------------")
                 return self.cost_per_week[self.week], self.week
             else:
-                self.week -= 1
-                if self.week == self.manufacturer.get_sequence()[self.trial][self.week - 1] and self.week <= 6:
+                if self.week <= self.manufacturer.get_sequence()[self.trial][self.week - 1] and self.week <= 6 and self.manufacturer.get_sequence()[self.trial][self.week - 1] <= 6:
                     self.data_file.write("\n - Week #" + str(self.week) + " expected ERD: Week #" + str(self.manufacturer.get_sequence()[self.trial][self.week - 1]) + ", user action: " + str('STAYED'))
                     self.data_file.write("\n ERD was accomplished!")
                     self.data_file.write("\n Total cost for Trial #" + str(self.trial + 1) + " = " + str(0))
                     self.data_file.close()
-                    return 0, self.week
+                    return 0, self.week - 1
                 else:
                     self.data_file.write("\n - Week #" + str(self.week) + " expected ERD: Week #" + str(self.manufacturer.get_sequence()[self.trial][self.week - 1]) + ", user action: " + str('STAYED'))
                     self.data_file.write("\n ERD was not accomplished!")
@@ -343,7 +326,7 @@ class Trial():
                     self.data_file.close()
                     print("\nYour inventory ran out, your penalty is 100000")
                     print ("\n-------------------------END TRIAL #" + str(self.trial + 1) + "-----------------------------------")
-                    return 100000, self.week 
+                    return 100000, self.week - 1
                 
 
 def withinTrialSurvey(file_path, trial):
