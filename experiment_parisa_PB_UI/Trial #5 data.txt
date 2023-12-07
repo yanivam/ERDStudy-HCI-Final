@@ -1,0 +1,4 @@
+Trial #5:
+ - Week #6 expected ERD: Week #8, user action: STAYED
+ ERD was not accomplished!
+ Total cost for Trial #5 = 100000
