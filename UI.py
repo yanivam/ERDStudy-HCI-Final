@@ -99,9 +99,9 @@ class Trial():
             # self.initial = tk.Label(self.top_frame, font=('Arial', 25), text=f"Welcome to Trial #{self.trial}! Click one of the buttons on the left!")
             # self.initial.pack()
             
-            self.titleFormat('ERD_Week')
+            self.titleFormat('Inv')
             
-            self.updateERD_Weekly()
+            self.getTable()
             
     def titleFormat(self, section):  
         for child in self.top_frame.winfo_children():
@@ -425,7 +425,7 @@ class Study():
 
         cost_overall = 0
         user_data_file = open("experiment_" + user + str('/') + "Trial Summary" + " data.txt", 'w')
-        visual_UI = False
+        visual_UI = True
         for i in range(self.num_trials):
             trial = Trial(i, 6, [37500, 40000,45000,55000,70000,100000], "ACC", visual_UI, "experiment_" + user + str('/'), cost_overall)
             cost_incurred, week = trial.run_trial()
