@@ -49,7 +49,6 @@ class Manufacturer():
 class Trial():
     def __init__(self, trial, weeks_until_inventory_runs_out, cost_per_week, manufacturer, visual_UI, dir_name, cost_ov):
 
-        self.img = ''
         self.week = 0
         self.cost = cost_ov
         self.dir_name = dir_name
@@ -97,11 +96,17 @@ class Trial():
             self.historical_button = tk.Button(self.left_frame, text="Historical Graph", command=self.updateERD_Hist)
             self.historical_button.grid(row=2, column=0, padx=20, pady=50)
             
+            # self.initial = tk.Label(self.top_frame, font=('Arial', 25), text=f"Welcome to Trial #{self.trial}! Click one of the buttons on the left!")
+            # self.initial.pack()
+            
             self.titleFormat('ERD_Week')
             
             self.updateERD_Weekly()
             
     def titleFormat(self, section):  
+        for child in self.top_frame.winfo_children():
+            child.destroy()
+            
         self.erd_label = tk.Label(self.top_frame, font=('Arial', 25), text=f"Estimated Resupply Date: {self.current_ERD}")
         self.erd_label.pack()
 
@@ -150,8 +155,8 @@ class Trial():
 
     def manufacturerDelay(self):
         total = 0
-        for sequences in self.manufacturer.sequence:
-            total += abs(sequences[0] - sequences[-1])
+        sequences = self.manufacturer.sequence[self.trial]
+        total += abs(sequences[0] - sequences[-1])
         return total / len(self.manufacturer.sequence)
 
     def update_ERD_display(self):
@@ -176,7 +181,7 @@ class Trial():
             self.trial_vis.pack()
             return
         else:
-            plt.figure()
+            plt.clf()
             self.trial_Title = tk.Label(self.top_frame, font=('Arial', 20), text="Historical Data for Incurred Costs")
             self.trial_Title.pack()
             # self.trial_vis.pack(side='left')
@@ -184,7 +189,7 @@ class Trial():
             path = self.dir_name + "visualizations/Trial_" + str(trial) + ".jpg"
             img1 = Image.open(path)
             img1 = img1.resize((400, 350))
-            img = ImageTk.PhotoImage(img1)
+            img = ImageTk.PhotoImage(img1, master=self.root)
             self.trial_vis = tk.Label(self.top_frame, image=img)
             self.trial_vis.image=img
             self.trial_vis.pack(side='left')
@@ -204,10 +209,11 @@ class Trial():
             self.trial_vis.pack()
             return
         else:
-            plt.figure()
+            plt.clf()
             # self.trial_vis.image = " "
             weeks = [x + 1 for x in range(week)]
             ERD = [self.manufacturer.get_sequence()[self.trial][week - 1] for week in weeks]
+            self.trial_del = tk.Label(self.top_frame)
             path = self.dir_name + "visualizations/Trial_" + str(
                 self.trial) + '_week_' + str(week) + '.jpg'
             plt.title("ERD Estimate (Trial: " + str(self.trial + 1) + ")")
@@ -220,15 +226,17 @@ class Trial():
             
             img1 = Image.open(path)
             img1 = img1.resize((400, 350))
-            self.img = ImageTk.PhotoImage(img1)
-            self.trial_vis = tk.Label(self.top_frame, image=self.img, text="Average ERD Delay: \n"+str(round(self.manufacturerDelay(), 3)) + " week(s)")
-            self.trial_vis.image= self.img
-            self.trial_vis.pack()
+            img = ImageTk.PhotoImage(img1, master=self.root)
+            self.trial_vis = tk.Label(self.top_frame, image=img)
+            self.trial_vis.image = img
+            self.trial_vis.pack(side='left')
+            self.trial_del.config(text="Average ERD Delay: \n"+str(round(self.manufacturerDelay(), 3)) + " week(s)")
+            self.trial_del.pack(side='right')
             
             return
 
     def wait_action(self):
-        self.updateERD_Weekly()
+        # self.updateERD_Weekly()
         self.week += 1
         if self.week+1 == len(self.manufacturer.get_sequence()[self.trial]):
             self.root.quit()
@@ -448,7 +456,7 @@ class Study():
             print(" ")
             print ("------------------------------------------------------------------------")
             print("Trial #" + str(i+1) + " survey time! \n")
-            withinTrialSurvey("experiment_" + user + str('/'), i+1)
+            # withinTrialSurvey("experiment_" + user + str('/'), i+1)
             print ("------------------------------------------------------------------------")
 
             
