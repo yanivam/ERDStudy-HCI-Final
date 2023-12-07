@@ -49,6 +49,7 @@ class Manufacturer():
 class Trial():
     def __init__(self, trial, weeks_until_inventory_runs_out, cost_per_week, manufacturer, visual_UI, dir_name, cost_ov):
 
+        self.img = ''
         self.week = 0
         self.cost = cost_ov
         self.dir_name = dir_name
@@ -97,12 +98,6 @@ class Trial():
             self.historical_button.grid(row=2, column=0, padx=20, pady=50)
             
             self.titleFormat('ERD_Week')
-            
-            # self.curr_trial_vis = tk.Label(self.top_frame, image="")
-            # self.curr_trial_vis.pack(side='left')
-            
-            # self.curr_trial_vis_del = tk.Label(self.top_frame, text="")
-            # self.curr_trial_vis_del.pack(side='right')
             
             self.updateERD_Weekly()
             
@@ -181,17 +176,17 @@ class Trial():
             self.trial_vis.pack()
             return
         else:
+            plt.figure()
             self.trial_Title = tk.Label(self.top_frame, font=('Arial', 20), text="Historical Data for Incurred Costs")
             self.trial_Title.pack()
-            self.trial_vis = tk.Label(self.top_frame)
             # self.trial_vis.pack(side='left')
             self.trial_cost = tk.Label(self.top_frame)
             path = self.dir_name + "visualizations/Trial_" + str(trial) + ".jpg"
-            img = Image.open(path)
-            img = img.resize((400, 350))
-            img = ImageTk.PhotoImage(img)
-            self.trial_vis.config(image=img)
-            # self.trial_vis.image = img
+            img1 = Image.open(path)
+            img1 = img1.resize((400, 350))
+            img = ImageTk.PhotoImage(img1)
+            self.trial_vis = tk.Label(self.top_frame, image=img)
+            self.trial_vis.image=img
             self.trial_vis.pack(side='left')
             self.trial_cost.config(text= "Total cost so far: \n $"+str(self.cost))
             self.trial_cost.pack(side='right')
@@ -223,14 +218,13 @@ class Trial():
             plt.yticks(range(1, 10))
             plt.savefig(path)
             
-            img = Image.open(path)
-            img = img.resize((400, 350))
-            img = ImageTk.PhotoImage(img)
-            self.trial_vis = tk.Label(self.top_frame, image=img, text="Average ERD Delay: \n"+str(round(self.manufacturerDelay(), 3)) + " week(s)")
+            img1 = Image.open(path)
+            img1 = img1.resize((400, 350))
+            self.img = ImageTk.PhotoImage(img1)
+            self.trial_vis = tk.Label(self.top_frame, image=self.img, text="Average ERD Delay: \n"+str(round(self.manufacturerDelay(), 3)) + " week(s)")
+            self.trial_vis.image= self.img
             self.trial_vis.pack()
-            # self.trial_vis.config(image=img)
-            # self.trial_vis.image = img
-            # self.trial_vis.configure(text="Average ERD Delay: \n"+str(round(self.manufacturerDelay(), 3)) + " week(s)")
+            
             return
 
     def wait_action(self):
@@ -468,6 +462,6 @@ class Study():
         print("Thank you", user, "for participating!")
 
 # set to 7
-trial_total = 2
+trial_total = 7
 study = Study(trial_total)
 study.run_experiment()
