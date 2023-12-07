@@ -349,13 +349,13 @@ def withinTrialSurvey(file_path, trial):
     print ("------------------------------------------------------------------------")
     survey.write("\nQ3 Answer: " + bene)
     print ("------------------------------------------------------------------------")
-    predict = input("Predictable: How predictive are XYZ's ERD messages?: \nExtremely dissatisfied  (1) " +
-                    "\nSomewhat dissatisfied (2) \nNeither satisfied nor dissatisfied (3) \nSomewhat satisfied (4) \nExtremely satisfied  (5) \nInput a number from 1-5: ")
+    predict = input("Predictable: How predictive are XYZ's ERD messages?: \nExtremely non-predictive  (1) " +
+                    "\nSomewhat non-predictive (2) \nNeither non-predictive nor predictive (3) \nSomewhat predictive (4) \nExtremely predictive  (5) \nInput a number from 1-5: ")
     print ("------------------------------------------------------------------------")
     survey.write("\nQ4 Answer: " + predict)
     print ("------------------------------------------------------------------------")
-    resp = input("Responsibility How much do you think XYZ is in control of when to deliver the products during shortages?: \nExtremely dissatisfied  (1) " +
-                    "\nSomewhat dissatisfied (2) \nNeither satisfied nor dissatisfied (3) \nSomewhat satisfied (4) \nExtremely satisfied  (5) \nInput a number from 1-5: ")
+    resp = input("Responsibility How much do you think XYZ is in control of when to deliver the products during shortages?: \nExtremely not in control  (1) " +
+                    "\nSomewhat not in control (2) \nNeither not in control nor in control (3) \nSomewhat in control (4) \nExtremely in control (5) \nInput a number from 1-5: ")
     print ("------------------------------------------------------------------------")
     survey.write("\nQ5 Answer: " + resp)
     print ("End for Trial #" + str(trial) + " Survey")
@@ -425,7 +425,7 @@ class Study():
 
         cost_overall = 0
         user_data_file = open("experiment_" + user + str('/') + "Trial Summary" + " data.txt", 'w')
-        visual_UI = True
+        visual_UI = False
         for i in range(self.num_trials):
             trial = Trial(i, 6, [37500, 40000,45000,55000,70000,100000], "ACC", visual_UI, "experiment_" + user + str('/'), cost_overall)
             cost_incurred, week = trial.run_trial()
@@ -439,7 +439,7 @@ class Study():
             print(" ")
             print ("------------------------------------------------------------------------")
             print("Trial #" + str(i+1) + " survey time! \n")
-            # withinTrialSurvey("experiment_" + user + str('/'), i+1)
+            withinTrialSurvey("experiment_" + user + str('/'), i+1)
             print ("------------------------------------------------------------------------")
 
             
