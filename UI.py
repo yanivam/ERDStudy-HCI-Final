@@ -245,6 +245,7 @@ class Trial():
             self.update_ERD_display()
             self.update_week_display()
             self.updateERD_Weekly()
+            self.getTable()
 
     def run_trial(self):
         # The non visual UI setup
