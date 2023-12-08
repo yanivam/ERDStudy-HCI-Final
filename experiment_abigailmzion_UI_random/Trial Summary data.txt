@@ -1,0 +1,10 @@
+
+Trial #1 cost: 37500
+Trial #2 cost: 37500
+Trial #3 cost: 0
+Trial #4 cost: 37500
+Trial #5 cost: 37500
+Trial #6 cost: 37500
+Trial #7 cost: 70000
+Final tally cost: 257500
+Remaining budget: 442500
