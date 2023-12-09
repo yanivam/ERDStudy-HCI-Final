@@ -1,0 +1,6 @@
+Survey Question Answers
+Q1 Satisfaction answer: 3
+Q2 Work again answer: 2
+Q3 Age: 21
+Q4 Gender: M
+Q5 Education level: 3
