@@ -428,7 +428,7 @@ class Study():
         user_data_file = open("experiment_" + user + str('/') + "Trial Summary" + " data.txt", 'w')
         visual_UI = True
         for i in range(self.num_trials):
-            trial = Trial(i, 6, [37500, 40000,45000,55000,70000,100000], "ACC", visual_UI, "experiment_" + user + str('/'), cost_overall)
+            trial = Trial(i, 6, [37500, 40000,45000,55000,70000,100000], "RAN", visual_UI, "experiment_" + user + str('/'), cost_overall)
             cost_incurred, week = trial.run_trial()
             cost_overall += cost_incurred
             print("\nTrial " + str(i+1) + " ended on week " +  str(week+1) + " and the cost incurred was $" + str(cost_incurred))
